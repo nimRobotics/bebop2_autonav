@@ -1,0 +1,13 @@
+Symlinking /home/parrot/bebop_ws/devel/share/bebop_driver/cmake/bebop_driverConfig.cmake
+Symlinking /home/parrot/bebop_ws/devel/share/bebop_driver/cmake/bebop_driverConfig-version.cmake
+Symlinking /home/parrot/bebop_ws/devel/share/bebop_driver/docs/BebopArdrone3Config.dox
+Symlinking /home/parrot/bebop_ws/devel/share/bebop_driver/docs/BebopArdrone3Config.wikidoc
+Symlinking /home/parrot/bebop_ws/devel/share/bebop_driver/docs/BebopArdrone3Config-usage.dox
+Symlinking /home/parrot/bebop_ws/devel/include/bebop_driver/BebopArdrone3Config.h
+Symlinking /home/parrot/bebop_ws/devel/lib/libbebop.so
+Symlinking /home/parrot/bebop_ws/devel/lib/libbebop_driver_nodelet.so
+Symlinking /home/parrot/bebop_ws/devel/lib/pkgconfig/bebop_driver.pc
+Symlinking /home/parrot/bebop_ws/devel/lib/python2.7/dist-packages/bebop_driver/__init__.py
+Symlinking /home/parrot/bebop_ws/devel/lib/python2.7/dist-packages/bebop_driver/cfg/BebopArdrone3Config.py
+Symlinking /home/parrot/bebop_ws/devel/lib/python2.7/dist-packages/bebop_driver/cfg/__init__.py
+Symlinking /home/parrot/bebop_ws/devel/lib/bebop_driver/bebop_driver_node

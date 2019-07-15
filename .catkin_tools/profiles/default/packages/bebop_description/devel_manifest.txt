@@ -1,0 +1,5 @@
+bebop_autonomy/bebop_description
+/home/parrot/bebop_ws/devel/.private/bebop_description/cmake.lock /home/parrot/bebop_ws/devel/./cmake.lock
+/home/parrot/bebop_ws/devel/.private/bebop_description/share/bebop_description/cmake/bebop_descriptionConfig.cmake /home/parrot/bebop_ws/devel/share/bebop_description/cmake/bebop_descriptionConfig.cmake
+/home/parrot/bebop_ws/devel/.private/bebop_description/share/bebop_description/cmake/bebop_descriptionConfig-version.cmake /home/parrot/bebop_ws/devel/share/bebop_description/cmake/bebop_descriptionConfig-version.cmake
+/home/parrot/bebop_ws/devel/.private/bebop_description/lib/pkgconfig/bebop_description.pc /home/parrot/bebop_ws/devel/lib/pkgconfig/bebop_description.pc

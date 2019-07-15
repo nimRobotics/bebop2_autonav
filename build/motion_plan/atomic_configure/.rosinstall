@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/parrot/bebop_ws/devel/.private/motion_plan/setup.sh

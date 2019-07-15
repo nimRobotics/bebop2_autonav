@@ -1,0 +1,8 @@
+prefix=/home/parrot/bebop_ws/devel/.private/motion_plan2
+
+Name: motion_plan2
+Description: Description of motion_plan2
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/parrot/bebop_ws/devel/.private/motion_plan2/lib 
+Requires: 

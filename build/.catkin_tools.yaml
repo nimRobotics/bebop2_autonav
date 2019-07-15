@@ -1,0 +1,6 @@
+devel_space: /home/parrot/bebop_ws/devel
+install: false
+install_space: /home/parrot/bebop_ws/install
+profile: default
+source_space: /home/parrot/bebop_ws/src
+workspace: /home/parrot/bebop_ws
