@@ -21,20 +21,25 @@ import datetime
 
 # Instantiate CvBridge
 bridge = CvBridge()
-
 def image_callback(msg):
+    start_time = time.time()
     print("Received an image!")
+    global i
     try:
         # Convert your ROS Image message to OpenCV2
         cv2_img = bridge.imgmsg_to_cv2(msg, "bgr8")
     except CvBridgeError, e:
         print(e)
     else:
-        ts = time.time()
+        # ts = time.time()
         # st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H-%M-%S')
-        # Save your OpenCV2 image as a jpeg
-
-        cv2.imwrite('images/'+str(ts)+'.jpeg', cv2_img)
+        i=i+1
+        print(i)
+        # cv2.imshow("img",cv2_img)
+        # cv2.waitKey(1)
+        cv2.imwrite('images/'+str(i)+'.jpeg', cv2_img)
+        elaspsed_time = time.time()-start_time
+        print(elaspsed_time)
 
 def main():
     rospy.init_node('image_listener')
@@ -46,4 +51,5 @@ def main():
     rospy.spin()
 
 if __name__ == '__main__':
+    i=0
     main()
