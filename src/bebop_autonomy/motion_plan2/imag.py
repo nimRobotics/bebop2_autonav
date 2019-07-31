@@ -94,7 +94,7 @@ def image_callback(msg):
     start_time = time.time()
     print("Received an image!")
     global i
-    if i%2==0:
+    if i%5==0:
         try:
             # Convert your ROS Image message to OpenCV2
             cv2_img = bridge.imgmsg_to_cv2(msg, "bgr8")
@@ -185,9 +185,9 @@ def image_callback(msg):
                 # Display our image
                 # cv2.imshow('QueryImage', QueryImg)
         # # Display our image
-        # cv2.imshow('QueryImage', cv2_img)
+        cv2.imshow('QueryImage', cv2_img)
         # # cv2.imwrite('det/det_'+str(i)+".png",QueryImg)
-        # cv2.waitKey(1)
+        cv2.waitKey(1)
         print("computation time",time.time()-start_time)
 
 
