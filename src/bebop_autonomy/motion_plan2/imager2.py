@@ -23,8 +23,8 @@ import cv2
 import cv2.aruco as aruco
 import os
 import pickle
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.pyplot as plt
+# from mpl_toolkits.mplot3d import Axes3D
+# import matplotlib.pyplot as plt
 
 # Instantiate CvBridge
 bridge = CvBridge()

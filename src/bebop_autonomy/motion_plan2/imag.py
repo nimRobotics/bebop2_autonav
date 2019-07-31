@@ -94,95 +94,102 @@ def image_callback(msg):
     start_time = time.time()
     print("Received an image!")
     global i
-    try:
-        # Convert your ROS Image message to OpenCV2
-        cv2_img = bridge.imgmsg_to_cv2(msg, "bgr8")
-    except CvBridgeError, e:
-        print(e)
-    else:
-        # cv2.imshow("img",cv2_img)
+    if i%2==0:
+        try:
+            # Convert your ROS Image message to OpenCV2
+            cv2_img = bridge.imgmsg_to_cv2(msg, "bgr8")
+        except CvBridgeError, e:
+            print(e)
+        else:
+            # cv2.imshow("img",cv2_img)
+            # cv2.waitKey(1)
+            # cv2.imwrite('images/'+str(i)+'.jpeg', cv2_img)
+            # elaspsed_time = time.time()-start_time
+            # print(elaspsed_time)
+
+            # ___________________________
+            # Capturing each frame of our video stream
+            QueryImg = cv2_img
+            ret = True
+            if ret == True:
+                # grayscale image
+                gray = cv2.cvtColor(QueryImg, cv2.COLOR_BGR2GRAY)
+
+                # Detect Aruco markers
+                corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, ARUCO_DICT, parameters=ARUCO_PARAMETERS)
+
+                # Refine detected markers
+                # Eliminates markers not part of our board, adds missing markers to the board
+
+                #Outline all of the markers detected in our image
+                QueryImg = aruco.drawDetectedMarkers(QueryImg, corners, borderColor=(0, 0, 255))
+                camcord=numpy.zeros((3,6))
+
+                # Require 15 markers before drawing axis    i=i+1
+                if ids is not None and len(ids) > 0:
+                    # Estimate the posture of the gridboard, which is a construction of 3Dtransformation=numpy.append(temp,tvec,axis=1) space based on the 2D video
+                    #pose, rvec, tvec = aruco.estimatePoseBoard(corners, ids, board, cameraMatrix, distCoeffs)
+                    #if pose:
+                    #    # Draw the camera posture calculated from the gridboard
+                    #    QreturnpovecueryImg = aruco.drawAxis(QueryImg, cameraMatrix, distCoeffs, rvec, tvec, 0.3)
+                    # Estimate the posture per each Aruco marker
+                    rvecs, tvecs,_ = aruco.estimatePoseSingleMarkers(corners, 0.07, cameraMatrix, distCoeffs)
+                    i=0
+                    arucopos=numpy.zeros((len(ids)+1,4))
+                    for rvec, tvec in zip(rvecs, tvecs):
+                        povec=restPovec(ids[i])
+                        QueryImg = aruco.drawAxis(QueryImg, cameraMatrix, distCoeffs, rvec, tvec, 0.1)
+                        cv2.imwrite("1.png",QueryImg)
+                        Rt,_Jacobian=cv2.Rodrigues(rvec)
+                        tvec=numpy.transpose(tvec[0])
+                        tvec=tvec.reshape(3,1)
+                        temp=numpy.concatenate(Rt)
+                        temp=temp.reshape(3,3)
+                        transformation=numpy.append(temp,tvec,axis=1)
+                        append=numpy.array([0,0,0,1]).reshape(1,4)
+                        transformation=numpy.append(transformation,append,axis=0)
+                        transformation=numpy.linalg.inv(transformation)
+                        arucocord=numpy.matmul(transformation,numpy.array([0,0,0,1]))
+                        cameracord=arucocord+povec
+                        # print(cameracord)
+                        arucopos[i,:]=povec
+                        i=i+1
+                        if i==1:
+
+                            posavg=cameracord
+                        elif i==len(ids):
+                            posavg = cameracord+posavg
+                            posavg = posavg/i  #output will hve homogenous plane coordinate =2, because cameracord=arucocord+povec, and we add two  ones
+                            print(posavg)
+                            arucopos[i,:]=posavg
+                            # print(arucopos)
+                            x=arucopos[:,0]
+                            y=arucopos[:,1]
+                            z=arucopos[:,2]
+                            #
+                            # # print(x,y,z)
+                            # ax.scatter(x, y, z, c='r', marker='o')
+                            # ax.set_zlim([0, 1])
+                            # ax.set_xlabel('X Label')
+                            # ax.set_ylabel('Y Label')
+                            # ax.set_zlabel('Z Label')
+                            # plt.draw()
+                            # plt.pause(0.002)
+                            # ax.cla()
+
+
+                        else:
+                            posavg = cameracord+posavg
+
+                    i=0
+                # Display our image
+                # cv2.imshow('QueryImage', QueryImg)
+        # # Display our image
+        # cv2.imshow('QueryImage', cv2_img)
+        # # cv2.imwrite('det/det_'+str(i)+".png",QueryImg)
         # cv2.waitKey(1)
-        # cv2.imwrite('images/'+str(i)+'.jpeg', cv2_img)
-        # elaspsed_time = time.time()-start_time
-        # print(elaspsed_time)
+        print("computation time",time.time()-start_time)
 
-        # ___________________________
-        # Capturing each frame of our video stream
-        QueryImg = cv2_img
-        ret = True
-        if ret == True:
-            # grayscale image
-            gray = cv2.cvtColor(QueryImg, cv2.COLOR_BGR2GRAY)
-
-            # Detect Aruco markers
-            corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, ARUCO_DICT, parameters=ARUCO_PARAMETERS)
-
-            # Refine detected markers
-            # Eliminates markers not part of our board, adds missing markers to the board
-
-            #Outline all of the markers detected in our image
-            QueryImg = aruco.drawDetectedMarkers(QueryImg, corners, borderColor=(0, 0, 255))
-            camcord=numpy.zeros((3,6))
-
-            # Require 15 markers before drawing axis    i=i+1
-            if ids is not None and len(ids) > 0:
-                # Estimate the posture of the gridboard, which is a construction of 3Dtransformation=numpy.append(temp,tvec,axis=1) space based on the 2D video
-                #pose, rvec, tvec = aruco.estimatePoseBoard(corners, ids, board, cameraMatrix, distCoeffs)
-                #if pose:
-                #    # Draw the camera posture calculated from the gridboard
-                #    QreturnpovecueryImg = aruco.drawAxis(QueryImg, cameraMatrix, distCoeffs, rvec, tvec, 0.3)
-                # Estimate the posture per each Aruco marker
-                rvecs, tvecs,_ = aruco.estimatePoseSingleMarkers(corners, 0.07, cameraMatrix, distCoeffs)
-                i=0
-                arucopos=numpy.zeros((len(ids)+1,4))
-                for rvec, tvec in zip(rvecs, tvecs):
-                    povec=restPovec(ids[i])
-                    QueryImg = aruco.drawAxis(QueryImg, cameraMatrix, distCoeffs, rvec, tvec, 0.1)
-                    cv2.imwrite("1.png",QueryImg)
-                    Rt,_Jacobian=cv2.Rodrigues(rvec)
-                    tvec=numpy.transpose(tvec[0])
-                    tvec=tvec.reshape(3,1)
-                    temp=numpy.concatenate(Rt)
-                    temp=temp.reshape(3,3)
-                    transformation=numpy.append(temp,tvec,axis=1)
-                    append=numpy.array([0,0,0,1]).reshape(1,4)
-                    transformation=numpy.append(transformation,append,axis=0)
-                    transformation=numpy.linalg.inv(transformation)
-                    arucocord=numpy.matmul(transformation,numpy.array([0,0,0,1]))
-                    cameracord=arucocord+povec
-                    # print(cameracord)
-                    arucopos[i,:]=povec
-                    i=i+1
-                    if i==1:
-
-                        posavg=cameracord
-                    elif i==len(ids):
-                        posavg = cameracord+posavg
-                        posavg = posavg/i  #output will hve homogenous plane coordinate =2, because cameracord=arucocord+povec, and we add two  ones
-                        print(posavg)
-                        arucopos[i,:]=posavg
-                        # print(arucopos)
-                        x=arucopos[:,0]
-                        y=arucopos[:,1]
-                        z=arucopos[:,2]
-                        # 
-                        # # print(x,y,z)
-                        # ax.scatter(x, y, z, c='r', marker='o')
-                        # ax.set_zlim([0, 1])
-                        # ax.set_xlabel('X Label')
-                        # ax.set_ylabel('Y Label')
-                        # ax.set_zlabel('Z Label')
-                        # plt.draw()
-                        # plt.pause(0.002)
-                        # ax.cla()
-
-
-                    else:
-                        posavg = cameracord+posavg
-
-                i=0
-            # Display our image
-            # cv2.imshow('QueryImage', QueryImg)
 
 
 def main():
@@ -190,7 +197,7 @@ def main():
     # Define your image topic
     image_topic = "/bebop/image_raw"
     # Set up your subscriber and define its callback
-    rospy.Subscriber(image_topic, Image, image_callback,  queue_size = 20)
+    rospy.Subscriber(image_topic, Image, image_callback,  queue_size = 1)
     # Spin until ctrl + c
     rospy.spin()
 
