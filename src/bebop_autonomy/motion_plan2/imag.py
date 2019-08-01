@@ -23,6 +23,8 @@ import cv2
 import cv2.aruco as aruco
 import os
 import pickle
+from geometry_msgs.msg import Twist
+from std_msgs.msg import Empty
 # from mpl_toolkits.mplot3d import Axes3D
 # import matplotlib.pyplot as plt
 
@@ -86,36 +88,64 @@ ARUCO_DICT = aruco.Dictionary_get(aruco.DICT_5X5_1000)
 # Create vectors we'll be using for rotations and translations for postures
 rvecs, tvecs = None, None
 
-
 # Instantiate CvBridge
 bridge = CvBridge()
 
+
+def land():
+    rate = rospy.Rate(10)
+    while land_pub.get_num_connections()<1:
+        rospy.loginfo_throttle(2,"waiting for landing")
+        rospy.sleep(0.1)
+    land_pub.publish(Empty())
+
+def takeoff():
+    rate = rospy.Rate(10)
+    while takeoff_pub.get_num_connections()<1:
+        rospy.loginfo_throttle(2,"waiting for takeoff")
+        rospy.sleep(0.1)
+    takeoff_pub.publish(Empty())
+
+def move1(lx,ly,lz,ax,ay,az):
+    # 5s wait for takeoff to finish
+    # time.sleep(5)
+    vel_msg = Twist()
+    print("Let's move your robot")
+    vel_msg.linear.x = lx
+    vel_msg.linear.y = ly
+    vel_msg.linear.z = lz
+    vel_msg.angular.x = ax
+    vel_msg.angular.y = ay
+    vel_msg.angular.z = az
+
+    while velocity_pub.get_num_connections()<1:
+        rospy.loginfo_throttle(2,"waiting for movement")
+        rospy.sleep(0.1)
+    velocity_pub.publish(vel_msg)
+
 def image_callback(msg):
     start_time = time.time()
-    print("Received an image!")
+    print("Received an image frame 1 !")
     global i
-    if i%5==0:
+    global j
+    global pos_x
+    global pos_y
+    global pos_z
+
+    if i%6==0: #skippping 6 frames
         try:
             # Convert your ROS Image message to OpenCV2
             cv2_img = bridge.imgmsg_to_cv2(msg, "bgr8")
         except CvBridgeError, e:
             print(e)
         else:
-            # cv2.imshow("img",cv2_img)
-            # cv2.waitKey(1)
-            # cv2.imwrite('images/'+str(i)+'.jpeg', cv2_img)
-            # elaspsed_time = time.time()-start_time
-            # print(elaspsed_time)
-
-            # ___________________________
-            # Capturing each frame of our video stream
             QueryImg = cv2_img
             ret = True
             if ret == True:
                 # grayscale image
                 gray = cv2.cvtColor(QueryImg, cv2.COLOR_BGR2GRAY)
-
                 # Detect Aruco markers
+                # start_time = time.time()
                 corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, ARUCO_DICT, parameters=ARUCO_PARAMETERS)
 
                 # Refine detected markers
@@ -155,52 +185,96 @@ def image_callback(msg):
                         arucopos[i,:]=povec
                         i=i+1
                         if i==1:
-
                             posavg=cameracord
                         elif i==len(ids):
                             posavg = cameracord+posavg
                             posavg = posavg/i  #output will hve homogenous plane coordinate =2, because cameracord=arucocord+povec, and we add two  ones
-                            print(posavg)
+                            # print(posavg)
+                            pos_x=posavg[0]
+                            pos_y=posavg[1]
+                            pos_z=posavg[2]
+                            # Set up your subscriber and define its callback
+                            targetx=0.762
+                            targety=1.5742
+                            targetz=1.6742
+                            print("pos_x",pos_x,"pos_y",pos_y,"pos_z",pos_z)
+                            # if pos_x<targetx-0.2 or pos_x>targetx+0.2:
+                            global g
+                            if pos_z<targetz-0.1 or pos_z>targetz+0.1:
+                                print("move zzzz")
+                                # dy=
+                                move1(0.03,-0.008 ,0,0,0,0)
+                            else:
+                                if g==0:
+                                    print("delay 5 once")
+                                    time.sleep(5)
+                                    g=1
+                                elif pos_x<targetx-0.2 or pos_x>targetx+0.2:
+                                    print("move XXX")
+                                    move1(0,0.01,0,0,0,0)
+                                else:
+                                    land()
+                                    time.sleep(30)
                             arucopos[i,:]=posavg
-                            # print(arucopos)
-                            x=arucopos[:,0]
-                            y=arucopos[:,1]
-                            z=arucopos[:,2]
-                            #
-                            # # print(x,y,z)
-                            # ax.scatter(x, y, z, c='r', marker='o')
-                            # ax.set_zlim([0, 1])
-                            # ax.set_xlabel('X Label')
-                            # ax.set_ylabel('Y Label')
-                            # ax.set_zlabel('Z Label')
-                            # plt.draw()
-                            # plt.pause(0.002)
-                            # ax.cla()
-
-
                         else:
                             posavg = cameracord+posavg
-
                     i=0
-                # Display our image
-                # cv2.imshow('QueryImage', QueryImg)
-        # # Display our image
-        cv2.imshow('QueryImage', cv2_img)
-        # # cv2.imwrite('det/det_'+str(i)+".png",QueryImg)
-        cv2.waitKey(1)
         print("computation time",time.time()-start_time)
-
-
+        print(i)
+    i=i+1
 
 def main():
-    rospy.init_node('image_listener')
+    # rospy.init_node('image_listener')
     # Define your image topic
     image_topic = "/bebop/image_raw"
-    # Set up your subscriber and define its callback
-    rospy.Subscriber(image_topic, Image, image_callback,  queue_size = 1)
+    global subsFr1
+    subsFr1=rospy.Subscriber(image_topic, Image, image_callback,  queue_size = 1)
+    # print("pos_x",pos_x,"pos_y",pos_y,"pos_z",pos_z)
     # Spin until ctrl + c
     rospy.spin()
 
 if __name__ == '__main__':
     i=0
+    j=0
+    g=0
+    pos_x=0
+    pos_y=0
+    pos_z=0
+
+    # intializing the node
+    rospy.init_node('parrot_control',anonymous=True)
+    # publisher for takeoff
+    takeoff_pub = rospy.Publisher("bebop/takeoff",Empty,queue_size=1)
+    takeoff()
+
+    # publisher for velocity
+    velocity_pub = rospy.Publisher('/bebop/cmd_vel', Twist, queue_size=1)
+
+    # 5s wait for takeoff to finish
+    time.sleep(5)
+    vel_msg = Twist()
+    print("Let's move your robot")
+    vel_msg.linear.x = 0
+    vel_msg.linear.y = 0
+    vel_msg.linear.z = 0.12
+    vel_msg.angular.x = 0
+    vel_msg.angular.y = 0
+    vel_msg.angular.z = 0
+    while velocity_pub.get_num_connections()<1:
+        rospy.loginfo_throttle(2,"waiting for movement")
+        rospy.sleep(0.1)
+
+    init_time = time.time()
+    dt=0
+    while dt<5.5:
+        velocity_pub.publish(vel_msg)
+        dt = time.time()-init_time
+    time.sleep(5)
+
+
+    # move1()
+    # publisher for landing
+    land_pub = rospy.Publisher("bebop/land",Empty,queue_size=1)
+    # land()
+
     main()

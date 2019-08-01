@@ -48,12 +48,10 @@ def image_callback(msg):
         # cv2.imwrite('images/'+str(i)+'.jpeg', cv2_img)
         elaspsed_time = time.time()-start_time
         print(elaspsed_time)
-
-
         # Display our image
-        cv2.imshow('QueryImage', cv2_img)
-        # cv2.imwrite('det/det_'+str(i)+".png",QueryImg)
-        cv2.waitKey(1)
+        # cv2.imshow('QueryImage', cv2_img)
+        cv2.imwrite('photos/'+str(i)+".png",cv2_img)
+        # cv2.waitKey(1)
 
 
 def main():

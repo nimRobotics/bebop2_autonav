@@ -11,8 +11,8 @@ def move1():
     print("Let's move your robot")
     vel_msg.linear.x = 0
     vel_msg.linear.y = 0
-    vel_msg.linear.z = 0
-    vel_msg.angular.x = 0.4
+    vel_msg.linear.z = 0.12
+    vel_msg.angular.x = 0
     vel_msg.angular.y = 0
     vel_msg.angular.z = 0
     while velocity_pub.get_num_connections()<1:
@@ -21,9 +21,10 @@ def move1():
 
     init_time = time.time()
     dt=0
-    while dt<0.7:
+    while dt<4.5:
         velocity_pub.publish(vel_msg)
         dt = time.time()-init_time
+    time.sleep(5)
 
     #
     # init_time = time.time()
