@@ -124,6 +124,7 @@ def move1(lx,ly,lz,ax,ay,az):
     velocity_pub.publish(vel_msg)
 
 def image_callback(msg):
+    global g
     start_time = time.time()
     print("Received an image frame 1 !")
     global i
@@ -194,24 +195,26 @@ def image_callback(msg):
                             pos_y=posavg[1]
                             pos_z=posavg[2]
                             # Set up your subscriber and define its callback
-                            targetx=0.762
+                            targetx=0.562
                             targety=1.5742
                             targetz=1.6742
                             print("pos_x",pos_x,"pos_y",pos_y,"pos_z",pos_z)
                             # if pos_x<targetx-0.2 or pos_x>targetx+0.2:
-                            global g
-                            if pos_z<targetz-0.1 or pos_z>targetz+0.1:
+
+                            print(g)
+                            if pos_z<targetz-0.1 or pos_z>targetz+0.1 and g==0:
                                 print("move zzzz")
                                 # dy=
-                                move1(0.03,-0.008 ,0,0,0,0)
+                                move1(0.03,-0.01 ,0,0,0,0)
                             else:
                                 if g==0:
                                     print("delay 5 once")
                                     time.sleep(5)
                                     g=1
-                                elif pos_x<targetx-0.2 or pos_x>targetx+0.2:
+                                elif pos_x<targetx-0.1 or pos_x>targetx+0.1:
                                     print("move XXX")
-                                    move1(0,0.01,0,0,0,0)
+                                    move1(0.005,0.01,0,0,0,0)
+                                    g=1
                                 else:
                                     land()
                                     time.sleep(30)
@@ -270,8 +273,6 @@ if __name__ == '__main__':
         velocity_pub.publish(vel_msg)
         dt = time.time()-init_time
     time.sleep(5)
-
-
     # move1()
     # publisher for landing
     land_pub = rospy.Publisher("bebop/land",Empty,queue_size=1)
