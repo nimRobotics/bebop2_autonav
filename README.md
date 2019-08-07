@@ -1,5 +1,4 @@
 # bebop2_autonav
-***
 
 Autonomous control of the Bebop 2 drone to showcase the possibilty of automated material delivery on the shop floor.
 **Authors:** Aakash Yadav, Aditya Yalamanchili and Ravi Srivatsa
@@ -11,10 +10,10 @@ Install the following operating system and other packages. It is highly recommen
   - OpenCV 2
   - ROS Kinetic Kame
 
-### New Features
+<!--### New Features-->
 
-  - Import a HTML file and watch it magically convert to Markdown
-  - Drag and drop images (requires your Dropbox account be linked)
+<!--  - Import a HTML file and watch it magically convert to Markdown-->
+<!--  - Drag and drop images (requires your Dropbox account be linked)-->
   
 ### Installation
 ##### Setting up environment. 
@@ -31,10 +30,6 @@ $ rosdep update
 $ rosdep install --from-paths src -i
 # Build the workspace
 $ catkin build
-
-$ sudo apt-get install dos2unix
-$ dos2unix file.py
-
 ```
 The build should complete without any errors
 ##### Takeoff and Landing using ROS
@@ -51,21 +46,30 @@ $ rostopic pub --once bebop/takeoff std_msgs/Empty
 # land drone
 $ rostopic pub --once [namespace]/land std_msgs/Empty
 ```
-
-##### Fetching the live image frames from drone using custom subscriber
-
+##### Creating the package (1st time only)
 ```sh
-$ npm install --production
-$ NODE_ENV=production node app
+$ cd ~bebop2_autonav/src/bebop_autonomy
+$ catkin_create_pkg motion_plan2 rospy roscpp std_msgs geometry_msgs sensor_msgs
+$ cd motion_plan2
+$ mkdir scripts
+```
+##### Running a python script 
+```sh
+# place your ROS python scripts at cd ~bebop2_autonav/src/bebop_autonomy/scripts
+# install dos2unix to resolve any character mismatch conflict
+$ sudo apt-get install dos2unix
+$ dos2unix my_file_name.py
+# make the python file executible (not required for cpp)
+$ cd ~bebop2_autonav/src/bebop_autonomy/scripts
+$ chmod +x my_file_name.py
+# run the script (launch the bebop driver first)
+$ rosrun motion_plan2 my_file_name.py
+
 ```
 
-### Plugins
-Markdown is a lightweight markup language based on the formatting conventions that people naturally use in email.  As [John Gruber] writes on the [Markdown site][df1]
+### TODO
+> The documentation needs to be further improved
 
-> The overriding design goal for Markdown's
-> formatting syntax is to make it as readable
-> as possible. The idea is that a
-> Markdown-formatted document should be
 
 
 
