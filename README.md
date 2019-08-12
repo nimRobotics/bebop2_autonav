@@ -44,9 +44,23 @@ Open a new terminal
 # takeoff drone
 $ rostopic pub --once bebop/takeoff std_msgs/Empty
 # land drone
-$ rostopic pub --once [namespace]/land std_msgs/Empty
+$ rostopic pub --once bebop/land std_msgs/Empty
+# emergency command to stop all the operations and free fall drone
+$ rostopic pub --once bebop/reset std_msgs/Empty
 ```
-##### Creating the package (1st time only)
+
+##### ArUco generation and camera caliberation
+```sh
+# capture the checkerboard images from drones camera and run the caliberation script
+$ cd ~bebop2_autonav/photos_checker_calibrate
+$ python CalibrateCamera.py
+# this will generate a pickle file to be used while aruco detection
+# generating aruco markers
+$ cd ~bebop2_autonav/aruco_generation
+$ python GenArucoMarker.py
+```
+
+##### Creating the package (1st time only, not required if this package is already existing)
 ```sh
 $ cd ~bebop2_autonav/src/bebop_autonomy
 $ catkin_create_pkg motion_plan2 rospy roscpp std_msgs geometry_msgs sensor_msgs
@@ -64,11 +78,10 @@ $ cd ~bebop2_autonav/src/bebop_autonomy/scripts
 $ chmod +x my_file_name.py
 # run the script (launch the bebop driver first)
 $ rosrun motion_plan2 my_file_name.py
+# for example use below to capture the images 
+$ rosrun motion_plan2 imagOR.py
 
 ```
-
-### TODO
-> The documentation needs to be further improved
 
 
 
