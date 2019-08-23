@@ -66,6 +66,7 @@ $ cd ~bebop2_autonav/src/bebop_autonomy
 $ catkin_create_pkg motion_plan2 rospy roscpp std_msgs geometry_msgs sensor_msgs
 $ cd motion_plan2
 $ mkdir scripts
+$ catkin make
 ```
 ##### Running a python script 
 ```sh
