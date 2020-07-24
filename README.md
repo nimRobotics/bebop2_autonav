@@ -1,7 +1,7 @@
 # bebop2_autonav
 
 Autonomous control of the Bebop 2 drone to showcase the possibilty of automated material delivery on the shop floor.
-**Authors:** Aakash Yadav, Aditya Yalamanchili and Ravi Srivatsa
+**Authors:** Aakash Yadav, Yuhao Zhong, Aditya Yalamanchili and Ravi Srivatsa
 
 ### Environment setup
 Install the following operating system and other packages. It is highly recommended to perform the setup in given order and to test Python/OpenCV before installing ROS
@@ -10,11 +10,6 @@ Install the following operating system and other packages. It is highly recommen
   - OpenCV 2
   - ROS Kinetic Kame
 
-<!--### New Features-->
-
-<!--  - Import a HTML file and watch it magically convert to Markdown-->
-<!--  - Drag and drop images (requires your Dropbox account be linked)-->
-  
 ### Installation
 ##### Setting up environment. 
 Visit the official bebop page [bebop-autonomy](https://bebop-autonomy.readthedocs.io/en/latest/installation.html)
@@ -83,7 +78,17 @@ $ rosrun motion_plan2 my_file_name.py
 $ rosrun motion_plan2 imagOR.py
 
 ```
+### Related Publication(s):
 
+[Image-based flight control of unmanned aerial vehicles (UAVs) for material handling in custom manufacturing](https://doi.org/10.1016/j.jmsy.2020.04.004)
 
+```
+@article{zhong2020image,
+  title={Image-based flight control of unmanned aerial vehicles (UAVs) for material handling in custom manufacturing},
+  author={Zhong, Yuhao and Wang, Zimo and Yalamanchili, Aditya V and Yadav, Aakash and Srivatsa, BN Ravi and Saripalli, Srikanth and Bukkapatnam, Satish TS},
+  journal={Journal of Manufacturing Systems},
+  year={2020},
+  publisher={Elsevier}
+}
 
-
+```
